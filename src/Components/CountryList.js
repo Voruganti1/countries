@@ -1,4 +1,5 @@
 import React from "react";
+import AmericaStates from "./AmericaStates";
 const CountryList = () => {
   return (
     <div>
@@ -13,6 +14,8 @@ const CountryList = () => {
           <option value="Canada">Canada</option>
         </select>
       </form>
+      <AmericaStates />
     </div>
   );
 };
+export default CountryList;
