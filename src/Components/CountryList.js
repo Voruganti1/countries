@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import "./CountryList.css";
 
 const AmericaStates = () => {
   const [countries, setCountries] = useState(null);
-  const [t, setToken] = useState(null);
-  const [selectedCountry, setSelectedCountry] = useState(null);
+  const [token, setToken] = useState("");
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const url = "https://www.universal-tutorial.com/api/";
   async function getData() {
-    const token = await axios.get(
+    const t = await axios.get(
       "https://www.universal-tutorial.com/api/getaccesstoken",
       {
         headers: {
@@ -18,51 +20,56 @@ const AmericaStates = () => {
       }
     );
     //Not working
-    setToken(token.data.auth_token);
+    setToken(t.data.auth_token);
 
-    const countriesList = await axios.get(
-      "https://www.universal-tutorial.com/api/countries/",
+    const countriesList = await axios.get(url + "countries/", {
+      headers: {
+        Accept: "application/json",
+        Authorization: "Bearer " + t.data.auth_token,
+      },
+    });
+    setCountries(countriesList.data);
+  }
+  async function getStates(countryName) {
+    const stateList = await axios.get(
+      "https://www.universal-tutorial.com/api/states/" + countryName,
+
       {
         headers: {
           Accept: "application/json",
-          Authorization: "Bearer " + token.data.auth_token,
+          Authorization: "Bearer " + token,
         },
       }
     );
-    /*const stateList = await axios.get(
-      " https://www.universal-tutorial.com/api/states/",
-      {
-        headers: {
-          Accept: "application/json",
-          Authorization: "Bearer " + token.data.auth_token,
-        },
-      }
-    );*/
-
-    setCountries(countriesList.data);
-    //console.log(selectedCountry);
-    // console.log(countriesList);
+    console.log(stateList.data);
   }
+  //console.log(selectedCountry);
+  // console.log(countriesList);
+
   useEffect(() => {
     if (!countries) {
       getData();
     }
   }, []);
+
   const countrySelectHandler = (event) => {
-    console.log(event);
+    setSelectedCountry(event.target.value);
+    getStates(event.target.value);
+    //console.log(selectedCountry);
   };
 
   return (
     <div>
-      <select onChange={countrySelectHandler()}>
+      <select onChange={countrySelectHandler} className="countryList">
         <option>---select---</option>
         {countries &&
           countries.map((c, i) => (
-            <option key={i} value={c.country_short_name}>
+            <option key={i} value={c.country_name}>
               {c.country_name}
             </option>
           ))}
       </select>
+      <p>you are selected {selectedCountry}</p>
     </div>
   );
 };
