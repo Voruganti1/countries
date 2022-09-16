@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./CountryList.css";
+import { useCountryContext } from "./GetCountryList";
 
 const AmericaStates = () => {
-  const [countries, setCountries] = useState(null);
+  const { countries, token } = useCountryContext();
+  const [selectedCountry, setSelectedCountry] = useState("");
+  const [states, setStates] = useState(null);
+  /* const [countries, setCountries] = useState(null);
   const [token, setToken] = useState("");
   const [selectedCountry, setSelectedCountry] = useState("");
   const url = "https://www.universal-tutorial.com/api/";
@@ -51,7 +55,20 @@ const AmericaStates = () => {
       getData();
     }
   }, []);
+*/
+  async function getStates(countryName) {
+    const stateList = await axios.get(
+      "https://www.universal-tutorial.com/api/states/" + countryName,
 
+      {
+        headers: {
+          Accept: "application/json",
+          Authorization: "Bearer " + token,
+        },
+      }
+    );
+    setStates(stateList.data);
+  }
   const countrySelectHandler = (event) => {
     setSelectedCountry(event.target.value);
     getStates(event.target.value);
@@ -69,7 +86,6 @@ const AmericaStates = () => {
             </option>
           ))}
       </select>
-      <p>you are selected {selectedCountry}</p>
     </div>
   );
 };
